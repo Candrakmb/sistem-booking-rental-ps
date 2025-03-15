@@ -3,24 +3,37 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class midauth
+class MidAuth
 {
     /**
      * Handle an incoming request.
      *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Closure  $next
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if(Auth::check() && Auth::user()->hasRole('admin')){
-            return redirect('/');
-        } else if(Auth::check() && Auth::user()->hasRole('user')) {
-            return  $next($request);
+        // Pastikan pengguna sudah login
+        if (!Auth::check()) {
+            return redirect()->route('login');
         }
-        return redirect('/');
+
+        $user = Auth::user();
+
+        // Redirect berdasarkan role jika pengguna mencoba mengakses halaman yang salah
+        if ($user->role === 'admin' && !$request->is('admin*')) {
+            return redirect()->route('dashboard');
+        }
+
+        if ($user->role === 'user' && !$request->is('transaksi*')) {
+            return redirect()->route('transaksi');
+        }
+
+        return $next($request);
     }
 }

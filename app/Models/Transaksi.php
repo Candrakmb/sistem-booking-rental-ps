@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Transaksi extends Model
 {
     protected $fillable = ['kode_booking','user_id', 'sesi_id','rental_id', 'status_transaksi','start_date','end_date','status_pembayaran','metode_pembayaran', 'total_bayar', 'snap_token', 'paid_at'];
-    protected $appends = ['charge', 'formatted_tanggal'];
+    protected $appends = ['charge', 'formatted_tanggal', 'formatted_sesi'];
 
 
     public function user()
@@ -29,7 +29,7 @@ class Transaksi extends Model
     public function getChargeAttribute()
     {
         $cekCharge = $this->total - $this->rental->harga;
-       
+
         if($cekCharge = 0){
             return 0;
         } else {
@@ -40,6 +40,10 @@ class Transaksi extends Model
     public function getFormattedTanggalAttribute()
     {
         return date('d F Y', strtotime($this->attributes['start_date']));
+    }
+
+    public function getFormattedSesiAttribute(){
+        return $this->sesi->nama . ' (' . date('H:i', strtotime($this->sesi->start)) . '-' . date('H:i', strtotime($this->sesi->end)) . ')';
     }
 
 

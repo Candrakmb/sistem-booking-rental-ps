@@ -42,14 +42,14 @@
                                             <select class="form-select select rental" name="rental" required>
                                                 <option selected disabled value="">Pilih...</option>
                                             </select>
-                                            <p class="help-block" style="display: none; color: red;"></p> 
+                                            <p class="help-block" style="display: none; color: red;"></p>
                                         </div>
                                         <div class="col-md-12">
                                             <label for="sesi" class="form-label required">Sesi</label>
                                             <select class="form-select select sesi" name="sesi" required>
                                                 <option selected disabled value="">Pilih...</option>
                                             </select>
-                                            <p class="help-block" style="display: none; color: red;"></p> 
+                                            <p class="help-block" style="display: none; color: red;"></p>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -58,7 +58,7 @@
                                         </div>
                                         <div class="col-md-12">
                                             <div class="row mb-2">
-                                                
+
                                                 <div class="col-md-6">Harga</div>
                                                 <div class="col-md-6 text-end">
                                                     <span class="view_harga">Rp 0</span>
@@ -107,7 +107,7 @@
                             <div class="col-md-12 text-center mb-3">
                                 <p class="fw-bold" id="kode_booking"></p>
                             </div>
-                            <div class="col-md-12 text-end">
+                            <div class="col-md-12 text-end mb-3">
                                 <span id="date" class="fw-bold">
                                 </span>
                             </div>
@@ -135,7 +135,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="row mb-2">
-                                        
+
                                         <div class="col-md-6">Harga</div>
                                         <div class="col-md-6 text-end">
                                             <span id="detail_harga"></span>

@@ -24,12 +24,12 @@ class RiwayatController extends Controller
     public function detailTransaksi($id)
     {
         $user_id = Auth::user()->id;
-        $transaksi = Transaksi::with('user', 'sesi', 'rental')->find($id);
-        if($transaksi->user_id != $user_id){
+        $this->data['transaksi'] = Transaksi::with('user', 'sesi', 'rental')->find($id);
+        if($this->data['transaksi']->user_id != $user_id){
             return response()->json(['status' => 'error', 'message' => 'tidak memiliki akses']);
         }
-        if ($transaksi) {
-            return response()->json(['transaksi' => $transaksi, 'status' => 'success']);
+        if ($this->data['transaksi']) {
+            return view('riwayat.rincian', $this->data);
         } else {
             return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan']);
         }

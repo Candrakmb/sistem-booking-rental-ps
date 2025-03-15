@@ -103,6 +103,10 @@ class TransaksiController extends Controller
         }
     }
 
+    public function pembayaranBerhasil(){
+        return view('transaksi.konfirmasi');
+    }
+
     public function store(Request $request)
     {
 
@@ -169,7 +173,7 @@ class TransaksiController extends Controller
                         'color'=> $color,
                     ];
                 }
-                return response()->json(['type' => 'success', 'event' => $this->data['event'], 'snap_token' => $transaksi->snap_token]);              
+                return response()->json(['type' => 'success', 'event' => $this->data['event'], 'snap_token' => $transaksi->snap_token]);
             } else {
                 DB::rollback();
                 return response()->json(['title' => 'Error', 'icon' => 'error', 'text' => 'maaf sesi sudah di booking!', 'ButtonColor' => '#EF5350', 'type' => 'error']);
