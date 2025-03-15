@@ -24,21 +24,21 @@ class MidtransApiController extends Controller
                             if ($request->fraud_status == 'challenge') {
                                 $transaksi->update(['status_pembayaran' => 'pending']);
                             } else {
-                                $transaksi->update(['status_pembayaran' => 'berhasil','paid_at' => Carbon::now(), 'metode_pembayaran' => $request->payment_type, 'status' => 'pembayaran berhasil']);
+                                $transaksi->update(['status_pembayaran' => 'berhasil','paid_at' => Carbon::now(), 'metode_pembayaran' => $request->payment_type, 'status' => 'pembayaran berhasil','status_transaksi' => 'dibayar']);
 
                             }
                         }
                     }
                     else if($request->transaction_status == 'settlement') {
-                        $transaksi->update(['status_pembayaran' => 'berhasil', 'paid_at' => Carbon::now(), 'metode_pembayaran' => $request->payment_type,'status' => 'pembayaran berhasil']);
+                        $transaksi->update(['status_pembayaran' => 'berhasil', 'paid_at' => Carbon::now(), 'metode_pembayaran' => $request->payment_type,'status_transaksi' => 'dibayar']);
                     } else if ($request->transaction_status == 'pending') {
                         $transaksi->update(['status_pembayaran' => 'pending']);
                     } else if ($request->transaction_status == 'deny') {
-                        $transaksi->update(['status_pembayaran' => 'deny']);
+                        $transaksi->update(['status_pembayaran' => 'deny','status_transaksi'=>'cencel']);
                     } else if ($request->transaction_status == 'expire') {
-                        $transaksi->update(['status_pembayaran' => 'expire']);
+                        $transaksi->update(['status_pembayaran' => 'expire','status_transaksi'=>'cencel']);
                     } else if ($request->transaction_status == 'cancel') {
-                        $transaksi->update(['status_pembayaran' => 'cancel']);
+                        $transaksi->update(['status_pembayaran' => 'cancel', 'status_transaksi'=>'cencel']);
                     }
 
                     return response()

@@ -210,6 +210,8 @@
                 onSuccess: function(result) {
                     /* You may add your own js here, this is just example */
                     // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+                    //buat menuju ke /transaksi/berhasil
+                    window.location.href = "/transaksi/berhasil";
                     console.log(result)
                 },
                 // Optional
