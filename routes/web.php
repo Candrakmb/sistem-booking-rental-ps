@@ -23,6 +23,7 @@ Route::middleware([midauth::class])->group(function () {
     Route::post('/getDataRentalSesi', [TransaksiController::class, 'getDataRental'])->name('getDataRental');
     Route::post('/calculateTotal', [TransaksiController::class, 'calculateTotal'])->name('calculateTotal');
     Route::post('/transaksi/create', [TransaksiController::class, 'store'])->name('transaksi.store');
+    Route::get('/transaksi/detail/{id}', [TransaksiController::class, 'detailTransaksi'])->name('transaksi.detail');
 });
 
 require __DIR__.'/auth.php';
