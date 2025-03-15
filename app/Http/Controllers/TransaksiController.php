@@ -147,11 +147,29 @@ class TransaksiController extends Controller
                 }
 
                 DB::commit();
-                $transaksi = Transaksi::with('user', 'sesi', 'rental')->find($transaksi->id);
-                $title = $transaksi->rental->nama . ' - ' . $transaksi->sesi->nama. ' ( ' . Carbon::parse($transaksi->sesi->start)->format('H:i') .' - ' . Carbon::parse($transaksi->sesi->end)->format('H:i') . ' )';
-                $start = $transaksi->start_date;
-                $end = $transaksi->end_date;
-                return response()->json(['type' => 'success','title'=> $title, 'start' => $start, 'end' => $end , 'snap_token' => $transaksi->snap_token]);
+                $this->data['event'] = array();
+                $this->data['transaksi'] = Transaksi::with('user', 'sesi', 'rental')->where('user_id',$user_id)->get();
+                foreach($this->data['transaksi'] as $transaksi){
+                    if($transaksi->status_pembayaran == 'pending'){
+                        $color = '#FFD700';
+                    } else if($transaksi->status_pembayaran == 'berhasil'){
+                        $color = '#00FF00';
+                    } else if($transaksi->status_pembayaran == 'deny'){
+                        $color = '#FF0000';
+                    } else if($transaksi->status_pembayaran == 'expire'){
+                        $color = '#FF0000';
+                    } else if($transaksi->status_pembayaran == 'cancel'){
+                        $color = '#FF0000';
+                    }
+                    $this->data['event'][] = [
+                        'id' => $transaksi->id,
+                        'title' => $transaksi->rental->nama . ' - ' . $transaksi->sesi->nama. ' ( ' . Carbon::parse($transaksi->sesi->start)->format('H:i') .' - ' . Carbon::parse($transaksi->sesi->end)->format('H:i') . ' )',
+                        'start' => $transaksi->start_date,
+                        'end' => $transaksi->end_date,
+                        'color'=> $color,
+                    ];
+                }
+                return response()->json(['type' => 'success', 'event' => $this->data['event'], 'snap_token' => $transaksi->snap_token]);              
             } else {
                 DB::rollback();
                 return response()->json(['title' => 'Error', 'icon' => 'error', 'text' => 'maaf sesi sudah di booking!', 'ButtonColor' => '#EF5350', 'type' => 'error']);

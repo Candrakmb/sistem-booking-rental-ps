@@ -5,10 +5,8 @@
         var dt = new Date();
         var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 
-        var viewKalender = function() {
+        var datakalender = function(transaksi){
             var calendarEl = document.getElementById('calendar');
-            var transaksi = @json($event);
-            console.log(transaksi);
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
                 selectable: true,
@@ -108,7 +106,11 @@
             });
 
             calendar.render();
+        }
 
+        var viewKalender = function() {
+            var transaksi = @json($event);
+            datakalender(transaksi);
         }
 
         var create = function() {
@@ -152,8 +154,10 @@
                         processData: false,
                         success: function (response) {
                             if(response.type == 'success'){
+                                $('#dateModal').modal('hide');
                                 payMidtrans(response.snap_token);
-                                calendar.refetchEvents()
+                                console.log(response);
+                                datakalender(response.event);
                             }else{
                                     swal.fire({
                                         title: response.title,
@@ -198,6 +202,7 @@
                 });
             })
         }
+
 
         var payMidtrans = function(snaptoken) {
             snap.pay(snaptoken, {
