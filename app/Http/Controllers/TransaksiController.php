@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Rental;
 use App\Models\Sesi;
 use App\Models\Transaksi;
+use App\Services\Midtrans\CreateSnapTokenService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -19,19 +20,43 @@ class TransaksiController extends Controller
 
     public function transaksi()
     {
+        $user_id = Auth::user()->id;
         $this->data['data'] =null;
         $this->data['rental'] = Rental::all();
         $this->data['sesi'] = Sesi::all();
-        $this->data['transaksi'] = Transaksi::with('user', 'sesi', 'rental')->get();
+        $this->data['transaksi'] = Transaksi::with('user', 'sesi', 'rental')->where('user_id',$user_id)->get();
         $this->data['event'] = array();
+        $color = null;
         foreach($this->data['transaksi'] as $transaksi){
+            if($transaksi->status_pembayaran == 'pending'){
+                $color = '#FFD700';
+            } else if($transaksi->status_pembayaran == 'berhasil'){
+                $color = '#00FF00';
+            } else if($transaksi->status_pembayaran == 'deny'){
+                $color = '#FF0000';
+            } else if($transaksi->status_pembayaran == 'expire'){
+                $color = '#FF0000';
+            } else if($transaksi->status_pembayaran == 'cancel'){
+                $color = '#FF0000';
+            }
             $this->data['event'][] = [
+                'id' => $transaksi->id,
                 'title' => $transaksi->rental->nama . ' - ' . $transaksi->sesi->nama. ' ( ' . Carbon::parse($transaksi->sesi->start)->format('H:i') .' - ' . Carbon::parse($transaksi->sesi->end)->format('H:i') . ' )',
                 'start' => $transaksi->start_date,
                 'end' => $transaksi->end_date,
+                'color'=> $color,
             ];
         }
         return view('transaksi.kalender', $this->data);
+    }
+
+    public function detailTransaksi($id){
+        $transaksi = Transaksi::with('user', 'sesi', 'rental')->find($id);
+        if($transaksi){
+            return response()->json(['transaksi' => $transaksi, 'status' => 'success']);
+        }else {
+            return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan']);
+        }
     }
 
     public function getDataRental(Request $request)
@@ -57,7 +82,7 @@ class TransaksiController extends Controller
         });
 
 
-        
+
         // return response()->json(['start_date' => $request->start_date, 'end_date' => $request->end_date,]);
         return response()->json(['dataRental' => $dataRental, 'dataSesi' => $dataSesi]);
 
@@ -67,6 +92,7 @@ class TransaksiController extends Controller
         $rental = Rental::find($request->rental_id);
         $chargeLibur = 50000;
         $hariLibur = filter_var($request->hari_libur, FILTER_VALIDATE_BOOLEAN);
+        // dd($hariLibur);
         if($hariLibur){
             $total = $rental->harga + $chargeLibur;
             return response()->json(['harga_rental'=> $rental->harga, 'charge_libur' => $chargeLibur , 'total' => $total]);
@@ -111,18 +137,26 @@ class TransaksiController extends Controller
                 $transaksi->status_pembayaran = 'pending';
                 $transaksi->total_bayar = $request->total;
                 $transaksi->save();
-                DB::commit();
 
+                if ($transaksi){
+                    $midtrans = new CreateSnapTokenService($transaksi);
+                    $snapToken = $midtrans->getSnapToken();
+
+                    $transaksi->snap_token = $snapToken;
+                    $transaksi->save();
+                }
+
+                DB::commit();
                 $transaksi = Transaksi::with('user', 'sesi', 'rental')->find($transaksi->id);
                 $title = $transaksi->rental->nama . ' - ' . $transaksi->sesi->nama. ' ( ' . Carbon::parse($transaksi->sesi->start)->format('H:i') .' - ' . Carbon::parse($transaksi->sesi->end)->format('H:i') . ' )';
                 $start = $transaksi->start_date;
                 $end = $transaksi->end_date;
-                return response()->json(['type' => 'success','title'=> $title, 'start' => $start, 'end' => $end]);
+                return response()->json(['type' => 'success','title'=> $title, 'start' => $start, 'end' => $end , 'snap_token' => $transaksi->snap_token]);
             } else {
                 DB::rollback();
                 return response()->json(['title' => 'Error', 'icon' => 'error', 'text' => 'maaf sesi sudah di booking!', 'ButtonColor' => '#EF5350', 'type' => 'error']);
             }
-        
+
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollback();
             return response()->json(['title' => 'Error', 'icon' => 'error', 'text' => 'Validasi gagal. ' . $e->getMessage(), 'ButtonColor' => '#EF5350', 'type' => 'error']);

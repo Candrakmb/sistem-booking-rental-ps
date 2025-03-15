@@ -17,7 +17,7 @@
 
 
 
-    <!-- Modal HTML -->
+    <!-- Modal create transaksi-->
     <div class="modal" id="dateModal" tabindex="-1" aria-labelledby="dateModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -93,6 +93,83 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal detail transaksi-->
+    <div class="modal" id="detailTransaksi" tabindex="-1" aria-labelledby="detailTransaksiModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="dateModalLabel">Rincian Booking</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12 text-center mb-3">
+                                <p class="fw-bold" id="kode_booking"></p>
+                            </div>
+                            <div class="col-md-12 text-end">
+                                <span id="date" class="fw-bold">
+                                </span>
+                            </div>
+                            <div class="col-md-12 text-start mb-3">
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <p>Rental : <span id="rincian_rental"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p>Sesi : <span id="rincian_sesi"></span></p>
+                                    </div>
+                                </div>
+                                <div class="row mb-2">
+                                    <div class="col-md-6">
+                                        <p>Status : <span id="rincian_status"></span></p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p>Status Pembayaran : <span id="rincian_pembayaran"></span></p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="col-md-12 text-center mb-3">
+                                    <p class="fw-bold">Rincian Pembayaran</p>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="row mb-2">
+                                        
+                                        <div class="col-md-6">Harga</div>
+                                        <div class="col-md-6 text-end">
+                                            <span id="detail_harga"></span>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-2">
+                                        <div class="col-md-6">Hari libur</div>
+                                        <div class="col-md-6 text-end">
+                                            <span id="detail_charge"></span>
+                                        </div>
+                                    </div>
+                                    <hr>
+                                    <div class="row">
+                                        <div class="col-md-6"><strong>Total</strong></div>
+                                        <div class="col-md-6 text-end">
+                                            <strong><span id="detail_total"></span></strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                    <div class="row">
+                                        <div class="d-grid gap-2 mt-3">
+                                            <button type="button" class="btn btn-primary" id="bayar">
+                                                Bayar
+                                            </button>
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     @push('after-script')
         @include('transaksi.script')
     @endpush

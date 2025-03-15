@@ -1,4 +1,4 @@
-
+<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('midtrans.client_key') }}"></script>
 <script>
     var data = function() {
         let valid = true, real='', message = '', title = '', type = '';
@@ -6,7 +6,6 @@
         var time = dt.getHours() + ":" + dt.getMinutes() + ":" + dt.getSeconds();
 
         var viewKalender = function() {
-
             var calendarEl = document.getElementById('calendar');
             var transaksi = @json($event);
             console.log(transaksi);
@@ -51,13 +50,8 @@
                     });
 
                     create();
-                    calculateTotal(info.dateStr);
-                    // Set the date in the modal
-                    
-                    //tampilkan start date dan end date
-                    // document.getElementById('modalDate').innerText = 'Date: ' + info.event.start + ' - ' + info.event.end;
-                    // Show the modal
-                    
+                    calculateTotal(info.startStr);
+
                 },
                 selectAllow: function(selectInfo) {
                         // Ambil tanggal mulai dan tanggal akhir
@@ -69,6 +63,47 @@
                 },
                 validRange: {
                     start: moment().format('YYYY-MM-DD') // Hanya bisa pilih mulai hari ini ke depan
+                },
+                eventClick: function(info) {
+                    $.ajax({
+                        url: '/transaksi/detail/' + info.event.id,
+                        type: 'GET',
+                        contentType: false,
+                        processData: false,
+                        success: function (response) {
+                            if(response.status == 'success'){
+                                console.log(response);
+                                var sesiStart = moment(response.transaksi.sesi.start, 'HH:mm:ss').format('HH:mm');
+                                var sesiEnd = moment(response.transaksi.sesi.end, 'HH:mm:ss').format('HH:mm');
+                                $('#detailTransaksi').modal('show');
+                                document.getElementById('kode_booking').innerText = 'Kode Booking ' + response.transaksi.kode_booking;
+                                $('#detail_harga').text(formatRupiah(response.transaksi.rental.harga));
+                                $('#detail_charge').text(formatRupiah(response.transaksi.charge));
+                                $('#detail_total').text(formatRupiah(response.transaksi.total_bayar));
+                                $('#rincian_status').text(response.transaksi.status_transaksi);
+                                $('#date').text(response.transaksi.formatted_tanggal);
+                                $('#rincian_sesi').text(response.transaksi.sesi.nama + ' (' + sesiStart + ' - ' + sesiEnd + ')');
+                                $('#rincian_rental').text(response.transaksi.rental.nama);
+                                $('#rincian_pembayaran').text(response.transaksi.status_pembayaran);
+                                if(response.transaksi.status_pembayaran == 'pending'){
+                                    $('#bayar').click(function(e) {
+                                    e.preventDefault();
+                                    payMidtrans(response.transaksi.snap_token);
+                                    });
+                                } else if (response.transaksi.status_pembayaran == 'berhasil'){
+                                    $('#bayar').hide();
+                                }
+                            }else{
+                                    swal.fire({
+                                        title: response.title,
+                                        text : response.text,
+                                        confirmButtonColor: response.ButtonColor,
+                                        type : response.type,
+                                    });
+                            }
+                            console.log(response);
+                        }
+                    });
                 }
             });
 
@@ -79,7 +114,7 @@
         var create = function() {
             $('#simpan').click(function(e) {
             e.preventDefault();
-            
+
             // Validasi inputan
             var valid = true;
             var err = 0;
@@ -117,11 +152,8 @@
                         processData: false,
                         success: function (response) {
                             if(response.type == 'success'){
-                                $('#calender').fullCalender('renderEvent',{
-                                    title: response.title,
-                                    start: response.start,
-                                    end: response.end,
-                                });
+                                payMidtrans(response.snap_token);
+                                calendar.refetchEvents()
                             }else{
                                     swal.fire({
                                         title: response.title,
@@ -141,12 +173,14 @@
         var calculateTotal = function(date) {
             var date = new Date(date);
             var day = date.getDay();
+            console.log(date);
             $('select[name="rental"]').change(function(e) {
                 var id = $(this).val();
                 var libur = false;
                 if(day === 0 || day === 6) {
                     libur = true;
                 }
+                console.log(libur);
                 var formData = {
                     rental_id: id,
                     hari_libur: libur
@@ -165,6 +199,29 @@
             })
         }
 
+        var payMidtrans = function(snaptoken) {
+            snap.pay(snaptoken, {
+                // Optional
+                onSuccess: function(result) {
+                    /* You may add your own js here, this is just example */
+                    // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+                    console.log(result)
+                },
+                // Optional
+                onPending: function(result) {
+                    /* You may add your own js here, this is just example */
+                    // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+                    console.log(result)
+                },
+                // Optional
+                onError: function(result) {
+                    /* You may add your own js here, this is just example */
+                    // document.getElementById('result-json').innerHTML += JSON.stringify(result, null, 2);
+                    console.log(result)
+                }
+            });
+        }
+
         $('#dateModal').on('hidden.bs.modal', function() {
             $('.help-block').hide();
             $('.form-error').removeClass('form-error');
@@ -174,7 +231,13 @@
             $('#form-data').trigger('reset');
             $('#simpan').unbind();
         });
-       
+
+        $('#detailTransaksi').on('hidden.bs.modal', function() {
+            $('#detail_harga').text('');
+            $('#detail_charge').text('');
+            $('#detail_total').text('');
+        });
+
         function formatRupiah(angka) {
             return 'Rp ' + angka.toLocaleString('id-ID');
         }
