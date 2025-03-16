@@ -24,13 +24,10 @@ class MidAuth
         }
 
         $user = Auth::user();
+        $role = $user->getRoleNames()->first();
 
         // Redirect berdasarkan role jika pengguna mencoba mengakses halaman yang salah
-        if ($user->role === 'admin' && !$request->is('admin*')) {
-            return redirect()->route('dashboard');
-        }
-
-        if ($user->role === 'user' && !$request->is('transaksi*')) {
+        if ($role != 'admin') {
             return redirect()->route('transaksi');
         }
 

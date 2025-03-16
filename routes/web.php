@@ -35,7 +35,7 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::get('/riwayat/detail/{id}', [RiwayatController::class, 'detailTransaksi'])->name('riwayat.detail');
 });
 
-Route::middleware('auth','role:admin')->group(function () {
+Route::middleware('auth','admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/rental/table', [RentalController::class, 'index'])->name('rental.table');
