@@ -15,13 +15,15 @@ Route::get('/', function () {
     return view('home');
 });
 
-
-
-Route::middleware(['auth', 'role:user'])->group(function () {
-    Route::get('/transaksi', [TransaksiController::class, 'transaksi'])->name('transaksi');
+Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth', 'role:user'])->group(function () {
+    Route::get('/transaksi', [TransaksiController::class, 'transaksi'])->name('transaksi');
+    
     Route::post('/getDataRentalSesi', [TransaksiController::class, 'getDataRental'])->name('getDataRental');
     Route::post('/calculateTotal', [TransaksiController::class, 'calculateTotal'])->name('calculateTotal');
     Route::post('/transaksi/create', [TransaksiController::class, 'store'])->name('transaksi.store');
