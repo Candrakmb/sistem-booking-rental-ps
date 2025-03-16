@@ -24,8 +24,7 @@ class MidtransApiController extends Controller
                             if ($request->fraud_status == 'challenge') {
                                 $transaksi->update(['status_pembayaran' => 'pending']);
                             } else {
-                                $transaksi->update(['status_pembayaran' => 'berhasil','paid_at' => Carbon::now(), 'metode_pembayaran' => $request->payment_type, 'status' => 'pembayaran berhasil','status_transaksi' => 'dibayar']);
-
+                                $transaksi->update(['status_pembayaran' => 'berhasil','paid_at' => Carbon::now(), 'metode_pembayaran' => $request->payment_type,'status_transaksi' => 'dibayar']);
                             }
                         }
                     }

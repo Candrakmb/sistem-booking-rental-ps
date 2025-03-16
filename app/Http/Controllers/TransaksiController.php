@@ -20,6 +20,7 @@ class TransaksiController extends Controller
 
     public function transaksi()
     {
+        $this->cekStatusTransaksi();
         $user_id = Auth::user()->id;
         $this->data['data'] =null;
         $this->data['rental'] = Rental::all();
@@ -50,18 +51,37 @@ class TransaksiController extends Controller
         return view('transaksi.kalender', $this->data);
     }
 
-    public function cekStatusTransaksi(){
+    public function cekStatusTransaksi() {
         $user_id = Auth::user()->id;
-        $transaksi = Transaksi::with('user', 'sesi', 'rental')->where('status_transaksi' , 'dibayar')->where('user_id', $user_id)->get();
+        $transaksi = Transaksi::with('user', 'sesi', 'rental')
+            ->where('status_pembayaran','berhasil')
+            ->where('user_id', $user_id)
+            ->get();
+    
+        $now = Carbon::now(); 
+    
+        foreach ($transaksi as $data) {
+            $timeStart = Carbon::parse($data->sesi->start)->format('H:i');
+            $timeEnd = Carbon::parse($data->sesi->end)->format('H:i');
+            $startDate = Carbon::parse($data->start_date)->toDateString(); 
+            $endDate = Carbon::parse($data->end_date);
 
-        foreach($transaksi as $data){
-            if (Carbon::parse($data->end_date)->isPast()) {
+            $nowDate = $now->toDateString(); // Ambil tanggal sekarang
+            $nowTime = $now->format('H:i'); // Ambil waktu sekarang
+           
+            // Jika waktu sekarang sudah melewati waktu end transaksi, ubah status menjadi 'selesai'
+            if ($data->status_transaksi !== 'selesai' && $now->greaterThanOrEqualTo($endDate)) {
                 $data->status_transaksi = 'selesai';
+                $data->save(); 
+            } else if (($nowTime >= $timeStart && $nowTime <= $timeEnd) && ($nowDate == $startDate) && $data->status_transaksi !== 'bermain') {
+                $data->status_transaksi = 'bermain';
                 $data->save();
             }
         }
+    
         return response()->json(['status' => 'success', 'message' => 'Status transaksi diperbarui']);
     }
+    
 
     public function detailTransaksi($id){
         $transaksi = Transaksi::with('user', 'sesi', 'rental')->find($id);
