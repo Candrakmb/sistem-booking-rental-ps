@@ -90,7 +90,7 @@
                                     e.preventDefault();
                                     payMidtrans(response.transaksi.snap_token);
                                     });
-                                } else if (response.transaksi.status_pembayaran == 'berhasil'){
+                                } else {
                                     $('#bayar').hide();
                                 }
                             }else{
