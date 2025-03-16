@@ -29,11 +29,13 @@ Route::middleware(['auth', 'role:user'])->group(function () {
     Route::post('/transaksi/create', [TransaksiController::class, 'store'])->name('transaksi.store');
     Route::get('/transaksi/detail/{id}', [TransaksiController::class, 'detailTransaksi'])->name('transaksi.detail');
     Route::get('/transaksi/berhasil', [TransaksiController::class, 'pembayaranBerhasil'])->name('transaksi.berhasil');
+    Route::get('/transaksi/cencel/{id}', [TransaksiController::class, 'cencelTransaksi'])->name('transaksi.cencel');
+
     Route::get('/riwayat', [RiwayatController::class, 'riwayat'])->name('riwayat');
     Route::get('/riwayat/detail/{id}', [RiwayatController::class, 'detailTransaksi'])->name('riwayat.detail');
 });
 
-Route::middleware('auth','role:admin')->group(function () {
+Route::middleware('auth','admin')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/rental/table', [RentalController::class, 'index'])->name('rental.table');

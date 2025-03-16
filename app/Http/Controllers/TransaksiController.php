@@ -98,6 +98,7 @@ class TransaksiController extends Controller
 
         $dataRental = $rental->filter(function ($item) use ($request) {
             $total = Transaksi::where('rental_id', $item->id)
+            ->where('status_transaksi','chekout')
             ->where('start_date', $request->start_date)
             ->where('end_date', $request->end_date)
             ->count();
@@ -108,6 +109,7 @@ class TransaksiController extends Controller
 
         $dataSesi = $sesi->filter(function ($item) use ($request) {
             $cekSesiInTransaksi = Transaksi::where('sesi_id', $item->id)
+            ->where('status_transaksi','chekout')
             ->where('start_date', $request->start_date)
             ->where('end_date', $request->end_date)
             ->first();
@@ -221,6 +223,27 @@ class TransaksiController extends Controller
             return response()->json(['title' => 'Error', 'icon' => 'error', 'text' => $e->getMessage(), 'ButtonColor' => '#EF5350', 'type' => 'error']);
         }
 
+    }
+
+    public function cencelTransaksi($id){
+
+        DB::beginTransaction();
+        try {
+            $transaksi = Transaksi::find($id);
+            if ($transaksi) {
+            $transaksi->status_transaksi = 'cencel';
+            $transaksi->status_pembayaran = 'cancel';
+            $transaksi->save();
+            DB::commit();
+            return response()->json(['title' => 'Success!', 'icon' => 'success', 'text' => 'Booking Berhasil dibatalkan!', 'ButtonColor' => '#66BB6A', 'type' => 'success']);
+            } else {
+            DB::rollback();
+            return response()->json(['title' => 'Error', 'icon' => 'error', 'text' => 'data tidak ditemukan', 'ButtonColor' => '#EF5350', 'type' => 'error']);
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['title' => 'Error', 'icon' => 'error', 'text' => $e->getMessage(), 'ButtonColor' => '#EF5350', 'type' => 'error']);
+        }
     }
 
 

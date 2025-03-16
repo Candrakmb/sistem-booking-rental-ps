@@ -85,13 +85,15 @@
                                 $('#rincian_sesi').text(response.transaksi.sesi.nama + ' (' + sesiStart + ' - ' + sesiEnd + ')');
                                 $('#rincian_rental').text(response.transaksi.rental.nama);
                                 $('#rincian_pembayaran').text(response.transaksi.status_pembayaran);
-                                if(response.transaksi.status_pembayaran == 'pending'){
+                                if(response.transaksi.status_pembayaran == 'pending' && response.transaksi.status_transaksi == 'chekout'){
                                     $('#bayar').click(function(e) {
                                     e.preventDefault();
                                     payMidtrans(response.transaksi.snap_token);
                                     });
-                                } else if (response.transaksi.status_pembayaran == 'berhasil'){
+                                    cencelTransaksi(response.transaksi.id);
+                                } else {
                                     $('#bayar').hide();
+                                    $('#cencel').hide();
                                 }
                             }else{
                                     swal.fire({
@@ -176,6 +178,49 @@
             });
         }
 
+        var cencelTransaksi = function (id){
+            $('#cencel').click(function(e) {
+            e.preventDefault();
+            swal.fire({
+            title: 'Apakah Anda yakin?',
+            text: "Anda tidak akan dapat mengembalikan ini!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Ya, batalkan!',
+            cancelButtonText: 'Tidak, batalkan'
+            }).then((result) => {
+            if (result.isConfirmed) {
+                $.ajax({
+                url: '/transaksi/cencel/' + id,
+                type: 'GET',
+                success: function(response) {
+                    if(response.type == 'success'){
+                    swal.fire({
+                        title: response.title,
+                        text : response.text,
+                        confirmButtonColor: response.ButtonColor,
+                        type : response.type,
+                    }).then(function() {
+                        location.reload();
+                        console.log('tesrelog');
+                    });
+                    } else {
+                    swal.fire({
+                        title: response.title,
+                        text : response.text,
+                        confirmButtonColor: response.ButtonColor,
+                        type : response.type,
+                    });
+                    }
+                }
+                });
+            }
+            });
+            });
+        }
+
         var calculateTotal = function(date) {
             var date = new Date(date);
             var day = date.getDay();
@@ -245,6 +290,8 @@
             $('#detail_harga').text('');
             $('#detail_charge').text('');
             $('#detail_total').text('');
+            $('#bayar').show();
+            $('#cencel').show();
         });
 
         function formatRupiah(angka) {

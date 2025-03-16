@@ -31,14 +31,15 @@ class AuthenticatedSessionController extends Controller
 
         // dd($request->user()->getRoleNames()->first());
 
-        $user = $request->user()->getRoleNames()->first();
+        // $user = $request->user()->getRoleNames()->first();
 
         // Redirect berdasarkan role
-            if ($user === 'admin') {
-                return redirect()->intended(route('dashboard', absolute: false));
-            } else {
-                return redirect()->intended(route('transaksi', absolute: false));
-            }
+            if ($request->user()->hasRole('admin')) {
+                return redirect()->intended(route('dashboard'));
+            } 
+                
+            return redirect()->intended(route('transaksi'));
+           
     }
     /**
      * Destroy an authenticated session.

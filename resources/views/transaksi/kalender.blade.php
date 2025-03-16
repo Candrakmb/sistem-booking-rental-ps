@@ -162,6 +162,9 @@
                                             <button type="button" class="btn btn-primary" id="bayar">
                                                 Bayar
                                             </button>
+                                            <button type="button" class="btn btn-danger" id="cencel">
+                                                Batal
+                                            </button>
                                         </div>
                                     </div>
                             </div>
