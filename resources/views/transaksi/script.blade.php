@@ -85,7 +85,7 @@
                                 $('#rincian_sesi').text(response.transaksi.sesi.nama + ' (' + sesiStart + ' - ' + sesiEnd + ')');
                                 $('#rincian_rental').text(response.transaksi.rental.nama);
                                 $('#rincian_pembayaran').text(response.transaksi.status_pembayaran);
-                                if(response.transaksi.status_pembayaran == 'pending'){
+                                if(response.transaksi.status_pembayaran == 'pending' && response.transaksi.status_transaksi == 'chekout'){
                                     $('#bayar').click(function(e) {
                                     e.preventDefault();
                                     payMidtrans(response.transaksi.snap_token);
