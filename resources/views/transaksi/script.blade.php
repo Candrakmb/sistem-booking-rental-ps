@@ -245,6 +245,7 @@
             $('#detail_harga').text('');
             $('#detail_charge').text('');
             $('#detail_total').text('');
+            $('#bayar').show();
         });
 
         function formatRupiah(angka) {
