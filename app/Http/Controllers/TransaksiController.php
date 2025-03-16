@@ -20,6 +20,7 @@ class TransaksiController extends Controller
 
     public function transaksi()
     {
+        $this->cekStatusTransaksi();
         $user_id = Auth::user()->id;
         $this->data['data'] =null;
         $this->data['rental'] = Rental::all();
@@ -50,6 +51,38 @@ class TransaksiController extends Controller
         return view('transaksi.kalender', $this->data);
     }
 
+    public function cekStatusTransaksi() {
+        $user_id = Auth::user()->id;
+        $transaksi = Transaksi::with('user', 'sesi', 'rental')
+            ->where('status_pembayaran','berhasil')
+            ->where('user_id', $user_id)
+            ->get();
+    
+        $now = Carbon::now(); 
+    
+        foreach ($transaksi as $data) {
+            $timeStart = Carbon::parse($data->sesi->start)->format('H:i');
+            $timeEnd = Carbon::parse($data->sesi->end)->format('H:i');
+            $startDate = Carbon::parse($data->start_date)->toDateString(); 
+            $endDate = Carbon::parse($data->end_date);
+
+            $nowDate = $now->toDateString(); // Ambil tanggal sekarang
+            $nowTime = $now->format('H:i'); // Ambil waktu sekarang
+           
+            // Jika waktu sekarang sudah melewati waktu end transaksi, ubah status menjadi 'selesai'
+            if ($data->status_transaksi !== 'selesai' && $now->greaterThanOrEqualTo($endDate)) {
+                $data->status_transaksi = 'selesai';
+                $data->save(); 
+            } else if (($nowTime >= $timeStart && $nowTime <= $timeEnd) && ($nowDate == $startDate) && $data->status_transaksi !== 'bermain') {
+                $data->status_transaksi = 'bermain';
+                $data->save();
+            }
+        }
+    
+        return response()->json(['status' => 'success', 'message' => 'Status transaksi diperbarui']);
+    }
+    
+
     public function detailTransaksi($id){
         $transaksi = Transaksi::with('user', 'sesi', 'rental')->find($id);
         if($transaksi){
@@ -78,6 +111,7 @@ class TransaksiController extends Controller
             ->where('start_date', $request->start_date)
             ->where('end_date', $request->end_date)
             ->first();
+            
             return !$cekSesiInTransaksi;
         });
 
@@ -101,6 +135,10 @@ class TransaksiController extends Controller
             return response()->json(['harga_rental'=> $rental->harga,
             'charge_libur' => 0, 'total' => $total]);
         }
+    }
+
+    public function pembayaranBerhasil(){
+        return view('transaksi.konfirmasi');
     }
 
     public function store(Request $request)
@@ -169,7 +207,7 @@ class TransaksiController extends Controller
                         'color'=> $color,
                     ];
                 }
-                return response()->json(['type' => 'success', 'event' => $this->data['event'], 'snap_token' => $transaksi->snap_token]);              
+                return response()->json(['type' => 'success', 'event' => $this->data['event'], 'snap_token' => $transaksi->snap_token]);
             } else {
                 DB::rollback();
                 return response()->json(['title' => 'Error', 'icon' => 'error', 'text' => 'maaf sesi sudah di booking!', 'ButtonColor' => '#EF5350', 'type' => 'error']);
