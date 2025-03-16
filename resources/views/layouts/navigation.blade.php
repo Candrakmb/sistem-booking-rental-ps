@@ -16,6 +16,15 @@
                         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" :class="request()->routeIs('dashboard') ? 'text-blue-500' : 'text-gray-800'">
                             {{ __('Dashboard') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('rental.table')" :active="request()->routeIs('rental.table')" :class="request()->routeIs('rental.table') ? 'text-blue-500' : 'text-gray-800'">
+                            {{ __('Rental') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('sesi.table')" :active="request()->routeIs('sesi.table')" :class="request()->routeIs('sesi.table') ? 'text-blue-500' : 'text-gray-800'">
+                            {{ __('Sesi') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('report')" :active="request()->routeIs('report')" :class="request()->routeIs('report') ? 'text-blue-500' : 'text-gray-800'">
+                            {{ __('Report') }}
+                        </x-nav-link>
                     @endrole
                     @role('user')
                     <x-nav-link :href="route('transaksi')" :active="request()->routeIs('transaksi')" :class="request()->routeIs('transaksi') ? 'text-blue-500' : 'text-gray-800'">
@@ -80,6 +89,21 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-gray-800">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+        </div>
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('rental.table')" :active="request()->routeIs('rental.table')" class="text-gray-800">
+                {{ __('Rental') }}
+            </x-responsive-nav-link>
+        </div>
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('sesi.table')" :active="request()->routeIs('sesi.table')" class="text-gray-800">
+                {{ __('Sesi') }}
+            </x-responsive-nav-link>
+        </div>
+        <div class="pt-2 pb-3 space-y-1">
+            <x-responsive-nav-link :href="route('report')" :active="request()->routeIs('report')" class="text-gray-800">
+                {{ __('Report') }}
             </x-responsive-nav-link>
         </div>
         @endrole

@@ -15,7 +15,7 @@
                                 <th>No</th>
                                 <th>Tanggal</th>
                                 <th>Rental</th>
-                                <th>Sesi</th>
+                                <th>Paket</th>
                                 <th>Status</th>
                                 <th>pembayaran</th>
                                 <th>Aksi</th>
@@ -31,7 +31,11 @@
                                 <td>{{ $riwayat->status_transaksi }}</td>
                                 <td>{{ $riwayat->status_pembayaran }}</td>
                                 <td>
-                                    <a href="{{ route('riwayat.detail', $riwayat->id) }}" class="btn btn-primary">Detail</a>
+                                    @if ( $type == 'admin')
+                                        <a href="{{ route('report.detail', $riwayat->id) }}" class="btn btn-primary">Detail</a>
+                                    @else
+                                        <a href="{{ route('riwayat.detail', $riwayat->id) }}" class="btn btn-primary"> {{auth()->user()->role}} Detail</a>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach

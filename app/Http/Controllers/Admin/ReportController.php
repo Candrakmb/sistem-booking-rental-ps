@@ -1,38 +1,36 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class RiwayatController extends Controller
+class ReportController extends Controller
 {
+
     public $data = [
-        'title' => 'Riwayat Transaksi',
-        'modul' => 'riwayat',
-        'type' => 'user'
+        'title' => 'report',
+        'type' =>'admin'
     ];
 
-    public function riwayat()
-    {
-        $user_id = Auth::user()->id;
+    public function index(){
         $this->data['data'] = null;
-        $this->data['transaksi'] = Transaksi::with('user', 'sesi', 'rental')->where('user_id', $user_id)->get();
+        $this->data['transaksi'] = Transaksi::with('user', 'sesi', 'rental')->get();
+
         return view('riwayat.view', $this->data);
     }
 
     public function detailTransaksi($id)
     {
-        $user_id = Auth::user()->id;
         $this->data['transaksi'] = Transaksi::with('user', 'sesi', 'rental')->find($id);
-        if($this->data['transaksi']->user_id != $user_id){
-            return response()->json(['status' => 'error', 'message' => 'tidak memiliki akses']);
-        }
+    
         if ($this->data['transaksi']) {
             return view('riwayat.rincian', $this->data);
         } else {
             return response()->json(['status' => 'error', 'message' => 'Data tidak ditemukan']);
         }
     }
+
 }

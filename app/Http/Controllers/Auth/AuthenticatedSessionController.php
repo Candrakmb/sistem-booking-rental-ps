@@ -31,13 +31,11 @@ class AuthenticatedSessionController extends Controller
     $user = Auth::user();
 
     // Redirect berdasarkan role
-    if ($user->role === 'admin') {
-        return redirect()->intended(route('dashboard', absolute: false));
-    } else {
-        return redirect()->intended(route('transaksi', absolute: false));
-    }
-
-    
+        if ($user->role === 'admin') {
+            return redirect()->intended(route('dashboard', absolute: false));
+        } else {
+            return redirect()->intended(route('transaksi', absolute: false));
+        }
     }
     /**
      * Destroy an authenticated session.

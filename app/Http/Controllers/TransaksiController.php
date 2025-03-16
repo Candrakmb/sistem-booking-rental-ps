@@ -50,6 +50,19 @@ class TransaksiController extends Controller
         return view('transaksi.kalender', $this->data);
     }
 
+    public function cekStatusTransaksi(){
+        $user_id = Auth::user()->id;
+        $transaksi = Transaksi::with('user', 'sesi', 'rental')->where('status_transaksi' , 'dibayar')->where('user_id', $user_id)->get();
+
+        foreach($transaksi as $data){
+            if (Carbon::parse($data->end_date)->isPast()) {
+                $data->status_transaksi = 'selesai';
+                $data->save();
+            }
+        }
+        return response()->json(['status' => 'success', 'message' => 'Status transaksi diperbarui']);
+    }
+
     public function detailTransaksi($id){
         $transaksi = Transaksi::with('user', 'sesi', 'rental')->find($id);
         if($transaksi){
@@ -78,6 +91,7 @@ class TransaksiController extends Controller
             ->where('start_date', $request->start_date)
             ->where('end_date', $request->end_date)
             ->first();
+            
             return !$cekSesiInTransaksi;
         });
 

@@ -45,7 +45,7 @@
                                             <p class="help-block" style="display: none; color: red;"></p>
                                         </div>
                                         <div class="col-md-12">
-                                            <label for="sesi" class="form-label required">Sesi</label>
+                                            <label for="sesi" class="form-label required">Paket</label>
                                             <select class="form-select select sesi" name="sesi" required>
                                                 <option selected disabled value="">Pilih...</option>
                                             </select>
@@ -117,7 +117,7 @@
                                         <p>Rental : <span id="rincian_rental"></span></p>
                                     </div>
                                     <div class="col-md-6">
-                                        <p>Sesi : <span id="rincian_sesi"></span></p>
+                                        <p>Paket : <span id="rincian_sesi"></span></p>
                                     </div>
                                 </div>
                                 <div class="row mb-2">

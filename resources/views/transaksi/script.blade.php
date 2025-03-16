@@ -52,15 +52,17 @@
 
                 },
                 selectAllow: function(selectInfo) {
-                        // Ambil tanggal mulai dan tanggal akhir
-                        let startDate = moment(selectInfo.start).format('YYYY-MM-DD');
-                        let endDate = moment(selectInfo.end).subtract(1, 'second').format('YYYY-MM-DD');
+                    let today = moment().format('YYYY-MM-DD'); // Ambil tanggal hari ini
+                    let startDate = moment(selectInfo.start).format('YYYY-MM-DD');
+                    let endDate = moment(selectInfo.end).subtract(1, 'second').format('YYYY-MM-DD');
 
-                        // Periksa apakah tanggal mulai dan tanggal akhir sama
-                        return startDate === endDate;
-                },
-                validRange: {
-                    start: moment().format('YYYY-MM-DD') // Hanya bisa pilih mulai hari ini ke depan
+                    // Cek apakah tanggal yang dipilih lebih kecil dari hari ini atau sama dengan hari ini
+                    if (startDate <= today) {
+                        return false;
+                    }
+
+                    // Pastikan hanya satu tanggal yang bisa dipilih (bukan rentang)
+                    return startDate === endDate;
                 },
                 eventClick: function(info) {
                     $.ajax({
